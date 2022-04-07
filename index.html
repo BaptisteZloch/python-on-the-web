@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Python on the web</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description"
+        content="Application that can execute python code the front web browser using web assembly (WASM)">
+    <meta name="author" content="Baptiste Zloch">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta property="og:title" content="Python on the web" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <meta property="og:description"
+        content="This application called deezer to spotify has been created by Baptiste Zloch. The aim is to convert a Deezer playlist directly to Spotify and getting the link at the end of the process. It also works for playlist from Deezer to Spotify." />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:locale:alternate" content="fr_FR" />
+    <meta property="og:site_name" content="python-on-the-web" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css"
+        integrity="sha512-T584yQ/tdRR5QwOpfvDfVQUidzfgc2339Lc8uBDtcp/wYu80d7jwBgAxbyMh0a9YM9F8N3tdErpFI8iaGx6x5g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.19.1/full/pyodide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200&display=swap');
+
+        #code-area {
+            display: block;
+            overflow: hidden;
+            resize: none;
+            font-family: 'Space Mono', monospace;
+            /*'JetBrains Mono', monospace;*/
+            -webkit-box-shadow: 7.5px 7.5px 8.5px -0.5px #888888;
+            -moz-box-shadow: 7.5px 7.5px 8.5px -0.5px #888888;
+            box-shadow: 7.5px 7.5px 8.5px -0.5px #888888;
+            margin-bottom: 3%;
+        }
+
+        body {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23a2d9ff' fill-opacity='1' d='M0,96L40,128C80,160,160,224,240,218.7C320,213,400,139,480,128C560,117,640,171,720,165.3C800,160,880,96,960,69.3C1040,43,1120,53,1200,53.3C1280,53,1360,43,1400,37.3L1440,32L1440,0L1400,0C1360,0,1280,0,1200,0C1120,0,1040,0,960,0C880,0,800,0,720,0C640,0,560,0,480,0C400,0,320,0,240,0C160,0,80,0,40,0L0,0Z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat no-repeat;
+            background-position: center center;
+            background-size: cover;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .header {
+            margin-top: 3%;
+            margin-bottom: 2%;
+            font-family: 'Archivo Black', sans-serif;
+        }
+
+        .explanation-text {
+            font-family: 'Didact Gothic', sans-serif;
+            font-size: 1.3rem;
+        }
+
+        #execute-btn,
+        #reset-btn,
+        #clear-btn {
+            font-family: 'Didact Gothic', sans-serif;
+            font-size: 1.3rem;
+            float: right;
+            -webkit-box-shadow: 7.5px 7.5px 8.5px -0.5px #ccc;
+            -moz-box-shadow: 7.5px 7.5px 8.5px -0.5px #ccc;
+            box-shadow: 7.5px 7.5px 8.5px -0.5px #ccc;
+            margin-bottom: 10%;
+        }
+
+        #terminal-area {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="header">
+            Execute<br>
+            Python in the web.
+        </h1>
+        <p class="explanation-text">
+            This simple web page allows you to run python code directly on your browser using a <b>web assembly
+                (WASM)</b>
+            interpetation of your python code.<br>The main tool used here is the <b>pyodiode.js</b> library that
+            compiler
+            python source code to web assembly and helps to binding variables from JavaScript to Python and vice-versa.
+        </p>
+        <div class="col-lg-12">
+            <textarea id="code-area" class="form-control" placeholder="enter your code here."></textarea>
+        </div>
+        <div class="row" style="">
+            <button class="rounded-pill btn btn-success" id="execute-btn" onclick="executeCode()">
+                Run code
+            </button>
+            <button class="rounded-pill btn btn-light" id="reset-btn" onclick="">
+                Reset
+            </button>
+            <button class="rounded-pill btn btn-danger" id="clear-btn" onclick="">
+                Clear
+            </button>
+        </div>
+        <div class="col-lg-12">
+            <pre><code id="terminal-area" class="language-python hljs"></code></pre>
+        </div>
+        
+    </div>
+    <script type="text/javascript">hljs.highlightAll();</script>
+    <script type="text/javascript" src="assets/js/dom_manipulation.js"></script>
+    <script type="text/javascript" src="assets/js/pyodide_usage.js"></script>
+</body>
+
+</html>
