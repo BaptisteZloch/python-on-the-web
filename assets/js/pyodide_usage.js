@@ -20,3 +20,12 @@ async function executeCode() {
     addToOutput(err);
   }
 }
+
+async function resetVariables(){
+  let pyodide = await pyodideReadyPromise;
+  await pyodide.globals.clear();
+}
+
+function clearCodeArea(){
+  document.getElementById("code-area").value = "";
+}
